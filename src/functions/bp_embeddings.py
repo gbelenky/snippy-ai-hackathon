@@ -177,7 +177,7 @@ async def http_start_embeddings(req: func.HttpRequest, client: df.DurableOrchest
     try:
         body = req.get_json()
         if not validate_input(body):
-            return func.HttpResponse(body=json.dumps({"error": "Invalid input"}), mimetype="application/json", status_code=400)
+            return func.HttpResponse(body=json.dumps({"error": "Invalid input"}), mimetype="application/json", status_code=500)
 
         function_name = "embeddings_orchestrator"
         # Start orchestration (async)
@@ -190,5 +190,65 @@ async def http_start_embeddings(req: func.HttpRequest, client: df.DurableOrchest
         return func.HttpResponse(body=json.dumps({"error": str(e)}), mimetype="application/json", status_code=500)
 
 def validate_input(input: dict) -> bool:
-    """Validate the input JSON for the orchestration."""
-    return False
+    """
+    Validate the input JSON for the orchestration.
+    
+    Required structure:
+    {
+        "projectId": "string",
+        "snippets": [
+            {
+                "name": "string",     # Required
+                "code": "string",     # Required (non-empty/non-whitespace)
+                "language": "string", # Optional
+                "description": "string" # Optional
+            }
+        ]
+    }
+    
+    Returns:
+        bool: True if input is valid, False otherwise
+    """
+    # Check if input is a dict
+    if not input or not isinstance(input, dict):
+        return False
+    
+    # Check required top-level fields
+    if "projectId" not in input or "snippets" not in input:
+        return False
+    
+    # Validate projectId
+    project_id = input.get("projectId")
+    if not isinstance(project_id, str) or not project_id.strip():
+        return False
+    
+    # Validate snippets
+    snippets = input.get("snippets")
+    if not isinstance(snippets, list) or not snippets:  # Must be non-empty list
+        return False
+    
+    # Validate each snippet
+    for snippet in snippets:
+        if not isinstance(snippet, dict):
+            return False
+        
+        # Check required fields: name and code
+        name = snippet.get("name")
+        code = snippet.get("code")
+        
+        if not isinstance(name, str) or not name.strip():
+            return False
+        
+        if not isinstance(code, str) or not code.strip():
+            return False
+        
+        # Optional fields (language, description) - if present, must be strings
+        language = snippet.get("language")
+        if language is not None and not isinstance(language, str):
+            return False
+            
+        description = snippet.get("description")
+        if description is not None and not isinstance(description, str):
+            return False
+    
+    return True

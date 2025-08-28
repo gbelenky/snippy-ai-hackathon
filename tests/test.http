@@ -3,3 +3,170 @@ GET https://func-wqu466f5vndhq.azurewebsites.net/api/health HTTP/1.1
 ###
 
 GET https://func-wqu466f5vndhq.azurewebsites.net/api/health_extended HTTP/1.1
+
+###
+
+# Level 2 - Embeddings Orchestration Tests
+
+# Test 1: Valid payload with all fields
+POST https://func-wqu466f5vndhq.azurewebsites.net/api/orchestrators/embeddings HTTP/1.1
+Content-Type: application/json
+x-functions-key: {{$dotenv FUNCTION_KEY}}
+
+{
+  "projectId": "level2-test",
+  "snippets": [
+    {
+      "name": "test.py",
+      "code": "# Level 2 Test\ndef test_function():\n    return 'Durable Functions Test WORKS'",
+      "language": "python",
+      "description": "Test snippet for Level 2"
+    }
+  ]
+}
+
+###
+
+# Test 2: Valid payload with minimal required fields only
+POST https://func-wqu466f5vndhq.azurewebsites.net/api/orchestrators/embeddings HTTP/1.1
+Content-Type: application/json
+x-functions-key: {{$dotenv FUNCTION_KEY}}
+
+{
+  "projectId": "level2-minimal-test",
+  "snippets": [
+    {
+      "name": "minimal.py",
+      "code": "print('Hello, World!')"
+    }
+  ]
+}
+
+###
+
+# Test 3: Valid payload with multiple snippets
+POST https://func-wqu466f5vndhq.azurewebsites.net/api/orchestrators/embeddings HTTP/1.1
+Content-Type: application/json
+x-functions-key: {{$dotenv FUNCTION_KEY}}
+
+{
+  "projectId": "level2-multi-test",
+  "snippets": [
+    {
+      "name": "function1.py",
+      "code": "def add(a, b):\n    return a + b",
+      "language": "python"
+    },
+    {
+      "name": "function2.js",
+      "code": "function multiply(a, b) {\n    return a * b;\n}",
+      "language": "javascript",
+      "description": "JavaScript multiplication function"
+    }
+  ]
+}
+
+###
+
+# Test 4: Large payload to test chunking logic
+POST https://func-wqu466f5vndhq.azurewebsites.net/api/orchestrators/embeddings HTTP/1.1
+x-functions-key: {{$dotenv FUNCTION_KEY}}
+Content-Type: application/json
+
+{
+  "projectId": "level2-large-test",
+  "snippets": [
+    {
+      "name": "large_test.py",
+      "code": "# Large test file\ndef function_0():\n    return 0\ndef function_1():\n    return 1\ndef function_2():\n    return 2\ndef function_3():\n    return 3\ndef function_4():\n    return 4\ndef function_5():\n    return 5\ndef function_6():\n    return 6\ndef function_7():\n    return 7\ndef function_8():\n    return 8\ndef function_9():\n    return 9\ndef function_10():\n    return 10\ndef function_11():\n    return 11\ndef function_12():\n    return 12\ndef function_13():\n    return 13\ndef function_14():\n    return 14\ndef function_15():\n    return 15\ndef function_16():\n    return 16\ndef function_17():\n    return 17\ndef function_18():\n    return 18\ndef function_19():\n    return 19\ndef function_20():\n    return 20"
+    }
+  ]
+}
+
+###
+
+# Test 5: INVALID - Missing projectId (should return 500)
+POST https://func-wqu466f5vndhq.azurewebsites.net/api/orchestrators/embeddings HTTP/1.1
+Content-Type: application/json
+x-functions-key: {{$dotenv FUNCTION_KEY}}
+
+{
+  "snippets": [
+    {
+      "name": "test.py",
+      "code": "print('test')"
+    }
+  ]
+}
+
+###
+
+# Test 6: INVALID - Missing snippets array (should return 500)
+POST https://func-wqu466f5vndhq.azurewebsites.net/api/orchestrators/embeddings HTTP/1.1
+Content-Type: application/json
+x-functions-key: {{$dotenv FUNCTION_KEY}}
+
+{
+  "projectId": "level2-test"
+}
+
+###
+
+# Test 7: INVALID - Empty snippets array (should return 500)
+POST https://func-wqu466f5vndhq.azurewebsites.net/api/orchestrators/embeddings HTTP/1.1
+Content-Type: application/json
+x-functions-key: {{$dotenv FUNCTION_KEY}}
+
+{
+  "projectId": "level2-test",
+  "snippets": []
+}
+
+###
+
+# Test 8: INVALID - Missing snippet name (should return 500)
+POST https://func-wqu466f5vndhq.azurewebsites.net/api/orchestrators/embeddings HTTP/1.1
+Content-Type: application/json
+x-functions-key: {{$dotenv FUNCTION_KEY}}
+
+{
+  "projectId": "level2-test",
+  "snippets": [
+    {
+      "code": "print('test')"
+    }
+  ]
+}
+
+###
+
+# Test 9: INVALID - Missing snippet code (should return 500)
+POST https://func-wqu466f5vndhq.azurewebsites.net/api/orchestrators/embeddings HTTP/1.1
+Content-Type: application/json
+x-functions-key: {{$dotenv FUNCTION_KEY}}
+
+{
+  "projectId": "level2-test",
+  "snippets": [
+    {
+      "name": "test.py"
+    }
+  ]
+}
+
+###
+
+# Test 10: INVALID - Empty/whitespace code (should return 500)
+POST https://func-wqu466f5vndhq.azurewebsites.net/api/orchestrators/embeddings HTTP/1.1
+Content-Type: application/json
+x-functions-key: {{$dotenv FUNCTION_KEY}}
+
+{
+  "projectId": "level2-test",
+  "snippets": [
+    {
+      "name": "test.py",
+      "code": "   "
+    }
+  ]
+}
