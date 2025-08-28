@@ -1,0 +1,7 @@
+### Test Extended Health Check
+GET http://localhost:7071/api/health_extended
+Content-Type: application/json
+
+### Test Basic Health Check
+GET http://localhost:7071/api/health
+Content-Type: application/json

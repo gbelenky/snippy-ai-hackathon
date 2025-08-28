@@ -1,0 +1,5 @@
+GET https://func-wqu466f5vndhq.azurewebsites.net/api/health HTTP/1.1
+
+###
+
+GET https://func-wqu466f5vndhq.azurewebsites.net/api/health_extended HTTP/1.1
